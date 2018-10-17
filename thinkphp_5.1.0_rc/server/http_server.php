@@ -6,11 +6,12 @@
  * @File  :   http_server.php
  * @Desc  : ...
  */
-$http = new swoole_http_server('0.0.0.0', '8810');
+$http = new swoole_http_server('0.0.0.0', '8811');
 //这里设置静态后,如果用户访问的是静态页面,在这里命中文件,后面的就不会再执行了,
 $http->set([
     'enable_static_handler' => true,    //开启静态页面支持
-    'document_root'         => '/workspace/imooc_swoole/thinkphp_5.1.0_rc/public/static',   //指定静态页面路径
+//    'document_root'         => '/workspace/imooc_swoole/thinkphp_5.1.0_rc/public/static',   //指定静态页面路径
+    'document_root'         => '/Users/liuhao/workspace/myProject/imooc_swoole/thinkphp_5.1.0_rc/public/static',   //指定静态页面路径
     "worker_num"            => 5,
 ]);
 //worker进程启动时的回调
