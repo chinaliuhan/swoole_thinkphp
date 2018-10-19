@@ -40,17 +40,13 @@ $http->on('request', function ($request, $response) use ($http) {
     $_GET = [];
     if (isset($request->get)) {
         foreach ($request->get as $k => $v) {
-            if($k == 's'){
                 $_GET[$k] = $v;
-            }else{
-                $_GET[strtoupper($k)] = $v;
-            }
         }
     }
     $_POST =[];
     if (isset($request->post)) {
         foreach ($request->post as $k => $v) {
-            $_POST[strtoupper($k)] = $v;
+            $_POST[$k] = $v;
         }
     }
     ob_start();

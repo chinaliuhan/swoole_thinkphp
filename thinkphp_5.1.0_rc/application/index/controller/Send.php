@@ -41,9 +41,12 @@ class Send
             return Util::responseJson('', '验证码发送失败,请稍后重试');
         }
         //Redis存储, 异步Redis
-        $redis = new \Swoole\Coroutine\Redis();
-        $redis->connect('localhost');
-        $setSms = $redis->set(Redis::smsKey($phoneNum), $code, 100);
+        $redis         = new \Swoole\Coroutine\Redis();
+        $connectResult = $redis->connect(config('redis.host'), config('redis.port'), config('reids.timeOut'));
+        if (!$connectResult) {
+            return Util::responseJson('', 'Redis连接失败,请检查配置文件');
+        }
+        $setSms = $redis->set(Redis::smsKey($phoneNum), $code);
         if (!$setSms) {
             return Util::responseJson('', '验证码存储失败,请稍后重试');
         }

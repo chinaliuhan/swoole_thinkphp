@@ -12,10 +12,17 @@ namespace app\common\lib;
 class  Redis
 {
 
-    protected static $pre = 'sms_';
+    protected static $smsPre = 'sms_';
+
+    protected static $userPre = 'user_';
 
     public static function smsKey($phone)
     {
-        return self::$pre . $phone;
+        return self::$smsPre . $phone;
+    }
+
+    public static function userKey($phone)
+    {
+        return self::$userPre . $phone;
     }
 }
