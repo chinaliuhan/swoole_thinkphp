@@ -5,6 +5,7 @@ namespace app\index\controller;
 use app\common\lib\Util;
 use app\common\lib\Sms;
 use app\common\lib\Redis;
+use think\Exception;
 
 /**
  * @Author: liuhao
@@ -35,7 +36,23 @@ class Send
             return Util::responseJson('', '手机号码错误');
         }
         //生成随机数
-        $code = mt_rand(1000, 9999);
+        $code     = mt_rand(1000, 9999);
+        $taskData = [
+            'method' => 'sendSms',
+            'data'   => [
+                'phone' => $phoneNum,
+                'code'  => $code,
+            ],
+        ];
+        try {
+            $_POST['http_server']->task($taskData);
+        } catch (\Exception $e) {
+
+            var_dump($e->getMessage());
+        }
+
+        return Util::responseJson('', '发送成功');
+        // 上面采用了task任务这里弃用异步Redis
         //发送短信
         if (!Sms::sendSms($phoneNum, $code)) {
             return Util::responseJson('', '验证码发送失败,请稍后重试');

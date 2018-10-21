@@ -9,9 +9,11 @@
 $http = new swoole_http_server('0.0.0.0', '8811');
 //这里设置静态后,如果用户访问的是静态页面,在这里命中文件,后面的就不会再执行了,
 $http->set([
-    'enable_static_handler' => true,    //开启静态页面支持
-//    'document_root'         => '/workspace/imooc_swoole/thinkphp_5.1.0_rc/public/static',   //指定静态页面路径
-    'document_root'         => '/Users/liuhao/workspace/myProject/imooc_swoole/thinkphp_5.1.0_rc/public/static',   //指定静态页面路径
+    'enable_static_handler' => true,
+    //开启静态页面支持
+    //    'document_root'         => '/workspace/imooc_swoole/thinkphp_5.1.0_rc/public/static',   //指定静态页面路径
+    'document_root'         => '/Users/liuhao/workspace/myProject/imooc_swoole/thinkphp_5.1.0_rc/public/static',
+    //指定静态页面路径
     "worker_num"            => 5,
 ]);
 //worker进程启动时的回调
@@ -40,10 +42,10 @@ $http->on('request', function ($request, $response) use ($http) {
     $_GET = [];
     if (isset($request->get)) {
         foreach ($request->get as $k => $v) {
-                $_GET[$k] = $v;
+            $_GET[$k] = $v;
         }
     }
-    $_POST =[];
+    $_POST = [];
     if (isset($request->post)) {
         foreach ($request->post as $k => $v) {
             $_POST[$k] = $v;
@@ -54,7 +56,7 @@ $http->on('request', function ($request, $response) use ($http) {
         think\Container::get('app', [APP_PATH])
                        ->run()
                        ->send();
-    }catch (Exception $e){
+    } catch (Exception $e) {
 
     }
     $result = ob_get_contents();
