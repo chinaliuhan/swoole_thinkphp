@@ -22,11 +22,11 @@ class http
             'enable_static_handler' => true,
             //开启静态页面支持
             //    'document_root'         => '/workspace/imooc_swoole/thinkphp_5.1.0_rc/public/static',   //指定静态页面路径
-            'document_root'         => '/Users/liuhao/workspace/myProject/imooc_swoole/thinkphp_5.1.0_rc/public/static',
+            'document_root' => dirname(__DIR__) . '/public/static',
             //指定静态页面路径
-            'worker_num'            => 4,
-            'task_worker_num'       => 4,
-            'log_level'             => SWOOLE_LOG_NOTICE,
+            'worker_num' => 4,
+            'task_worker_num' => 4,
+            'log_level' => SWOOLE_LOG_NOTICE,
         ]);
         $this->http->on('workerstart', [$this, 'onWorkerStart']);
         $this->http->on('request', [$this, 'onRequest']);
@@ -92,6 +92,12 @@ class http
                 $_GET[$k] = $v;
             }
         }
+        $_FILES = [];
+        if (isset($request->files)) {
+            foreach ($request->files as $k => $v) {
+                $_FILES[$k] = $v;
+            }
+        }
         $_POST = [];
         if (isset($request->post)) {
             foreach ($request->post as $k => $v) {
@@ -102,8 +108,8 @@ class http
         ob_start();
         try {
             think\Container::get('app', [APP_PATH])
-                           ->run()
-                           ->send();
+                ->run()
+                ->send();
         } catch (Exception $e) {
 
         }
@@ -115,7 +121,7 @@ class http
     public function onTask($serv, $taskId, $workId, $data)
     {
 
-        $task   = new \app\common\lib\Task();
+        $task = new \app\common\lib\Task();
         $result = call_user_func([$task, $data['method']], $data['data']);
 
         return $result;
