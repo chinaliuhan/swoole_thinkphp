@@ -75,6 +75,7 @@
               <!--用来存放item-->
               <div id="fileList" class="uploader-list"></div>
               <div id="filePicker">选择图片</div>
+              <input type="hidden" name="file"  value="" id="uploadImagePath">
             </div>
 
 
@@ -106,7 +107,7 @@
             auto: true,
 
             // swf文件路径
-            swf: BASE_URL + '/Uploader.swf',
+            swf: BASE_URL + '/static/webuploader/Uploader.swf',
 
             // 文件接收服务端。
             server: BASE_URL+ '/admin/image/index',
@@ -122,6 +123,42 @@
                 mimeTypes: 'image/*'
             }
         });
+
+        // 当有文件添加进来的时候
+        uploader.on( 'fileQueued', function( file ) {
+            var $li = $(
+                '<div id="' + file.id + '" class="file-item thumbnail">' +
+                '<img>' +
+                '</div>'
+                ),
+                $img = $li.find('img');
+
+
+            // $list为容器jQuery实例
+            $list.append( $li );
+
+            // 创建缩略图
+            // 如果为非图片文件，可以不用调用此方法。
+            // thumbnailWidth x thumbnailHeight 为 100 x 100
+            uploader.makeThumb( file, function( error, src ) {
+                if ( error ) {
+                    $img.replaceWith('<span>不能预览</span>');
+                    return;
+                }
+
+                $img.attr( 'src', src );
+            }, thumbnailWidth, thumbnailHeight );
+        });
+
+
+        // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+        uploader.on( 'uploadSuccess', function( file,response) {
+            if(response.status == 0){
+                $('#uploadImagePath').val(response.data.image)
+            }
+            $( '#'+file.id ).addClass('upload-state-done');
+        });
+
 
 
 
@@ -166,58 +203,26 @@
 
 
 
-        var $submitBtn = $('#submit-btn');
+        var submitBtn = $('#submit-btn');
         // 提交表单
-        $submitBtn.click(function (event) {
-          event.preventDefault();
-          var formData = $('form').serialize();
-          // TODO: 请求后台接口跳转界面，前端跳转或者后台跳
-          $.get("http://singwa.swoole.com:8811?s=admin/live/push&" + formData, function (data) {
+        submitBtn.click(function (event) {
+            event.preventDefault();
+            var formData = $('form').serialize();
+            console.log(formData)
+            // TODO: 请求后台接口跳转界面，前端跳转或者后台跳
+            $.get("http://localhost:8811/admin/live/push&" + formData, function (data) {
 
-            if (data.status == 1) {
-              // 登录成功
-            }
-            // location.href='index.html';
-          }, 'json');
-        });
-
-        // 当有文件添加进来的时候
-        uploader.on( 'fileQueued', function( file ) {
-            var $li = $(
-                '<div id="' + file.id + '" class="file-item thumbnail">' +
-                '<img>' +
-                '<div class="info">' + file.name + '</div>' +
-                '</div>'
-                ),
-                $img = $li.find('img');
-
-
-            // $list为容器jQuery实例
-            $list.append( $li );
-
-            // 创建缩略图
-            // 如果为非图片文件，可以不用调用此方法。
-            // thumbnailWidth x thumbnailHeight 为 100 x 100
-            uploader.makeThumb( file, function( error, src ) {
-                if ( error ) {
-                    $img.replaceWith('<span>不能预览</span>');
-                    return;
+                console.log(data)
+                if (data.status == 0) {
+                    // 登录成功
                 }
-
-                $img.attr( 'src', src );
-            }, thumbnailWidth, thumbnailHeight );
+                // location.href='index.html';
+            }, 'json');
         });
-
 
 
 
     </script>
-    <script>var _hmt = _hmt || []; (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hm, s);
-      })();</script>
   </body>
 
 </html>

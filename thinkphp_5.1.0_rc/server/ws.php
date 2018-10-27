@@ -112,6 +112,14 @@ class ws
                 $_POST[$k] = $v;
             }
         }
+
+        $_FILES = [];
+        if (isset($request->files)) {
+            foreach ($request->files as $k => $v) {
+                $_FILES[$k] = $v;
+            }
+        }
+
         $_POST['http_server'] = $this->ws;
         ob_start();
         try {
