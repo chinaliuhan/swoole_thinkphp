@@ -10,14 +10,16 @@
 class ws
 {
 
-    const   HOST = '0.0.0.0';
-    const   PORT = '8811';
+    const   HOST       = '0.0.0.0';
+    const   PORT       = '8811';
+    const   CHART_PORT = '8812';
     private $ws = null;
 
     public function __construct()
     {
         //激活swoole的句柄
         $this->ws = new swoole_websocket_server(self::HOST, self::PORT);
+        $this->ws->listen(self::HOST, self::CHART_PORT, SWOOLE_SOCK_TCP);
         $this->ws->set([
             'enable_static_handler' => true,
             //开启静态页面支持
@@ -46,6 +48,7 @@ class ws
     public function onOpen($ws, $request)
     {
         \app\common\lib\Predis::getInstance()->sAdd(config('redis.live_redis_key'), $request->fd);
+
         var_dump('客户端' . $request->fd . '开始连接');
     }
 
