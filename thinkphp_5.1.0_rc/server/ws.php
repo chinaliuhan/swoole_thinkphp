@@ -45,15 +45,13 @@ class ws
 
     public function onOpen($ws, $request)
     {
-        var_dump(111);
-        var_dump(config('redis.live_redis_key'));
-        var_dump($request->fd);
-        \app\common\lib\Predis::getInstance()->sadd(config('redis.live_redis_key'), $request->fd);
+        \app\common\lib\Predis::getInstance()->sAdd(config('redis.live_redis_key'), $request->fd);
+        var_dump('客户端' . $request->fd . '开始连接');
     }
 
     public function onMessage($ws, $frame)
     {
-        $ws->push($frame->fd, '服务器收到消息后,推送');
+        $ws->push($frame->fd, '服务器收到消息后');
     }
 
 
@@ -109,21 +107,19 @@ class ws
                 $_GET[$k] = $v;
             }
         }
-        $_POST = [];
+        $_POST                = [];
         $_POST['http_server'] = $this->ws;
         if (isset($request->post)) {
             foreach ($request->post as $k => $v) {
                 $_POST[$k] = $v;
             }
         }
-
         $_FILES = [];
         if (isset($request->files)) {
             foreach ($request->files as $k => $v) {
                 $_FILES[$k] = $v;
             }
         }
-
         ob_start();
         try {
             think\Container::get('app', [APP_PATH])
@@ -161,6 +157,7 @@ class ws
 
     public function onClose($ws, $fd)
     {
+        \app\common\lib\Predis::getInstance()->sRem(config('redis.live_redis_key'), $fd);
         echo "关闭连接: clientId{$fd}\n";
     }
 }
