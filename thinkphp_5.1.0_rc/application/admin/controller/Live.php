@@ -39,6 +39,13 @@ class Live
         ];
         $clients = \app\common\lib\Predis::getInstance()->sMembers(config('redis.live_redis_key'));
         foreach ($clients as $fd) {
+            //删除失效的连接
+            $fdExist = $_POST['http_server']->exist($fd);
+            if (!$fdExist) {
+                \app\common\lib\Predis::getInstance()->sRem(config('redis.live_redis_key'), $fd);
+                continue;
+            }
+            //对有效连接推送消息
             $_POST['http_server']->push($fd, json_encode($data));
         }
     }
