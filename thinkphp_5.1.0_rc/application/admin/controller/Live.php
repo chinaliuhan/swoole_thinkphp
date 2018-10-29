@@ -14,6 +14,16 @@ use app\common\lib\Util;
 class Live
 {
 
+    /**
+     * Method  push
+     *
+     * @desc    后台对前端用户的推送
+     * @author  liuhao <lh@btctrade.com>
+     * @date    2018/10/29
+     * @time    14:39
+     * @throws \Exception
+     * @return  void
+     */
     public function push()
     {
 
@@ -31,11 +41,12 @@ class Live
             ],
         ];
         $data    = [
-            'type'    => intval($_GET['type']),
-            'title'   => $teams[$_GET['team_id']]['name'] ?: '直播员',
-            'logo'    => $teams[$_GET['team_id']]['logo'] ?: '',
-            'content' => $_GET['content'] ?: '',
-            'image'   => $_GET['image'] ?: '',
+            'type'    => empty($_GET['type']) ? '' : intval($_GET['type']),
+            'title'   => empty($teams[$_GET['team_id']]['name']) ? '直播员' : $teams[$_GET['team_id']]['name'],
+            'logo'    => empty($teams[$_GET['team_id']]['logo']) ? '' : $teams[$_GET['team_id']]['logo'],
+            'content' => empty($_GET['content']) ? '' : $_GET['content'],
+            'image'   => empty($_GET['image']) ? '' : $_GET['image'],
+            'date'    => date('Y-m-d H:i:s', time()),
         ];
         $clients = \app\common\lib\Predis::getInstance()->sMembers(config('redis.live_redis_key'));
         foreach ($clients as $fd) {
@@ -48,5 +59,6 @@ class Live
             //对有效连接推送消息
             $_POST['http_server']->push($fd, json_encode($data));
         }
+        Util::responseJson('', '推送成功', '');
     }
 }
