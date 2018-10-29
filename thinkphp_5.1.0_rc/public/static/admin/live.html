@@ -51,7 +51,7 @@
               <select id="team_id" name="team_id" class="valid">
                 <option value="0">请选择</option>
                 <option value="1">马刺</option>
-                <option value="4">火箭</option>
+                <option value="2">火箭</option>
               </select>
             </div>
           </div>
@@ -153,7 +153,7 @@
 
         // 文件上传成功，给item添加成功class, 用样式标记上传成功。
         uploader.on( 'uploadSuccess', function( file,response) {
-            if(response.status == 0){
+            if(response.status == 1){
                 $('#uploadImagePath').val(response.data.image)
             }
             $( '#'+file.id ).addClass('upload-state-done');
@@ -213,7 +213,7 @@
             $.get("http://localhost:8811/admin/live/push?" + formData, function (data) {
 
                 console.log(data)
-                if (data.status == 0) {
+                if (data.status == 1) {
                     // 登录成功
                 }
                 // location.href='index.html';

@@ -23,9 +23,9 @@ class Image
                 'image' => config('live.host') . '/upload/' . $uploadInfo->getSaveName(),
             ];
 
-            return Util::responseJson('0', '', $data);
+            return Util::responseJson('1', '', $data);
         }
 
-        return Util::responseJson('1', '系统繁忙');
+        return Util::responseJson('0', '系统繁忙');
     }
 }

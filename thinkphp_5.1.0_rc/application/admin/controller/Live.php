@@ -28,9 +28,9 @@ class Live
     {
 
         if (empty($_GET)) {
-            Util::responseJson('1', '参数不存在');
+            Util::responseJson('', '参数不存在');
         }
-        $teams   = [
+        $teams = [
             1 => [
                 'name' => '马刺',
                 'logo' => '/live/imgs/team1.png',
@@ -40,25 +40,18 @@ class Live
                 'logo' => '/live/imgs/team2.png',
             ],
         ];
-        $data    = [
-            'type'    => empty($_GET['type']) ? '' : intval($_GET['type']),
-            'title'   => empty($teams[$_GET['team_id']]['name']) ? '直播员' : $teams[$_GET['team_id']]['name'],
-            'logo'    => empty($teams[$_GET['team_id']]['logo']) ? '' : $teams[$_GET['team_id']]['logo'],
-            'content' => empty($_GET['content']) ? '' : $_GET['content'],
-            'image'   => empty($_GET['image']) ? '' : $_GET['image'],
-            'date'    => date('Y-m-d H:i:s', time()),
+        $data  = [
+            'method' => 'pushLive',
+            'data'   => [
+                'type'    => empty($_GET['type']) ? '' : intval($_GET['type']),
+                'title'   => empty($teams[$_GET['team_id']]['name']) ? '直播员' : $teams[$_GET['team_id']]['name'],
+                'logo'    => empty($teams[$_GET['team_id']]['logo']) ? '' : $teams[$_GET['team_id']]['logo'],
+                'content' => empty($_GET['content']) ? '' : $_GET['content'],
+                'image'   => empty($_GET['image']) ? '' : $_GET['image'],
+                'date'    => date('Y-m-d H:i:s', time()),
+            ],
         ];
-        $clients = \app\common\lib\Predis::getInstance()->sMembers(config('redis.live_redis_key'));
-        foreach ($clients as $fd) {
-            //删除失效的连接
-            $fdExist = $_POST['http_server']->exist($fd);
-            if (!$fdExist) {
-                \app\common\lib\Predis::getInstance()->sRem(config('redis.live_redis_key'), $fd);
-                continue;
-            }
-            //对有效连接推送消息
-            $_POST['http_server']->push($fd, json_encode($data));
-        }
-        Util::responseJson('', '推送成功', '');
+        $_POST['http_server']->task($data);
+        Util::responseJson('1', '推送成功', '');
     }
 }

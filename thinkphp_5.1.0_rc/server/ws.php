@@ -137,7 +137,7 @@ class ws
     {
 
         $task   = new \app\common\lib\Task();
-        $result = call_user_func([$task, $data['method']], $data['data']);
+        $result = call_user_func([$task, $data['method']], $data['data'], $serv);
 
         return $result;
         //这里是异步运行的, 运行可知,

@@ -13,7 +13,7 @@ class Task
 {
 
 
-    public function sendSms($data)
+    public function sendSms($data, $server)
     {
         $result = Sms::sendSms($data['phone'], $data['code']);
         if (!$result) {
@@ -25,5 +25,23 @@ class Task
         }
 
         return true;
+    }
+
+    public function pushLive($data, $server)
+    {
+        $clients = Predis::getInstance()->sMembers(config('redis.live_redis_key'));
+        foreach ($clients as $fd) {
+            //删除失效的连接
+            $fdExist = $server->exist($fd);
+            if (!$fdExist) {
+                Predis::getInstance()->sRem(config('redis.live_redis_key'), $fd);
+                continue;
+            }
+            //对有效连接推送消息
+            $server->push($fd, json_encode($data));
+        }
+
+        return true;
+
     }
 }
