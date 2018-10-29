@@ -17,7 +17,7 @@ class ws
     public function __construct()
     {
         //激活swoole的句柄
-        $this->ws = new \Swoole\Http\Server(self::HOST, self::PORT);
+        $this->ws = new swoole_websocket_server(self::HOST, self::PORT);
         $this->ws->set([
             'enable_static_handler' => true,
             //开启静态页面支持
