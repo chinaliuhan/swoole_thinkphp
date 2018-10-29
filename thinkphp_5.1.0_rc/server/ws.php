@@ -45,12 +45,15 @@ class ws
 
     public function onOpen($ws, $request)
     {
+        var_dump(111);
+        var_dump(config('redis.live_redis_key'));
         var_dump($request->fd);
+        \app\common\lib\Predis::getInstance()->sadd(config('redis.live_redis_key'), $request->fd);
     }
 
     public function onMessage($ws, $frame)
     {
-        $ws->push($frame->fd, 'tuisong');
+        $ws->push($frame->fd, '服务器收到消息后,推送');
     }
 
 
@@ -107,6 +110,7 @@ class ws
             }
         }
         $_POST = [];
+        $_POST['http_server'] = $this->ws;
         if (isset($request->post)) {
             foreach ($request->post as $k => $v) {
                 $_POST[$k] = $v;
@@ -120,7 +124,6 @@ class ws
             }
         }
 
-        $_POST['http_server'] = $this->ws;
         ob_start();
         try {
             think\Container::get('app', [APP_PATH])
@@ -158,7 +161,7 @@ class ws
 
     public function onClose($ws, $fd)
     {
-        echo "clientId{$fd}\n";
+        echo "关闭连接: clientId{$fd}\n";
     }
 }
 

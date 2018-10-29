@@ -67,4 +67,9 @@ class  Predis
         return $this->redis->setex($key, $timeOut, $value);
     }
 
+    public function sadd($key, $value)
+    {
+        return $this->redis->sadd($key, $value);
+    }
+
 }

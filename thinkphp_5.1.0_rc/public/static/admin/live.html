@@ -210,7 +210,7 @@
             var formData = $('form').serialize();
             console.log(formData)
             // TODO: 请求后台接口跳转界面，前端跳转或者后台跳
-            $.get("http://localhost:8811/admin/live/push&" + formData, function (data) {
+            $.get("http://localhost:8811/admin/live/push?" + formData, function (data) {
 
                 console.log(data)
                 if (data.status == 0) {
