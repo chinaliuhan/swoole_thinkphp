@@ -111,7 +111,6 @@ class ws
             }
         }
         $_POST                = [];
-        $_POST['http_server'] = $this->ws;
         if (isset($request->post)) {
             foreach ($request->post as $k => $v) {
                 $_POST[$k] = $v;
@@ -123,6 +122,9 @@ class ws
                 $_FILES[$k] = $v;
             }
         }
+        //简单的日志落盘
+        $this->writeLog();
+        $_POST['http_server'] = $this->ws;
         ob_start();
         try {
             think\Container::get('app', [APP_PATH])
@@ -162,6 +164,15 @@ class ws
     {
         \app\common\lib\Predis::getInstance()->sRem(config('redis.live_redis_key'), $fd);
         echo "关闭连接: clientId{$fd}\n";
+    }
+
+    public function writeLog()
+    {
+        $data = array_merge(['' => date('Y-m-d H:i:s', time())], $_GET, $_POST, $_SERVER);
+        $logs = http_build_query($data, '', '&');
+        swoole_async_writefile(APP_PATH . '../runtime/log/' . date('Y-m-d'), urldecode($logs), function ($fileName) {
+            echo '日志写入成功' . $fileName . PHP_EOL;
+        }, FILE_APPEND);
     }
 }
 
