@@ -30,6 +30,8 @@ class ws
             'task_worker_num'       => 4,
             'log_level'             => SWOOLE_LOG_NOTICE,
         ]);
+        //worker进程启动时进行的回调
+        $this->ws->on("start", [$this, 'onStart']);
         //因为websocket是继承自httpServer的所以这里可以直接用websocket来做httpserver
         $this->ws->on('open', [$this, 'onOpen']);
         $this->ws->on('message', [$this, 'onMessage']);
@@ -43,6 +45,12 @@ class ws
         $this->ws->on('close', [$this, 'onClose']);
         //打开服务
         $this->ws->start();
+    }
+
+    public function onStart($server)
+    {
+        //设置worker进程别名,用于平滑重启 该方式不支持Mac
+        swoole_set_process_name('live_master');
     }
 
     public function onOpen($ws, $request)
