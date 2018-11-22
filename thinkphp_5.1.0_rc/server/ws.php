@@ -93,6 +93,13 @@ class ws
      */
     public function onRequest($request, $response)
     {
+        //过滤指定的请求
+        if ($request->server['request_uri'] == 'favicon.ico') {
+            $response->status(404);
+            $response->end();
+
+            return;
+        }
         $_SERVER = [];
         if (isset($request->server)) {
             foreach ($request->server as $k => $v) {
